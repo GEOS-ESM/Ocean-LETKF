@@ -7,6 +7,16 @@ IMPLICIT NONE
 PUBLIC
 
 INTEGER,SAVE :: nobs
+!STEVE: making these namelist accessible:
+INTEGER,SAVE :: nslots=5                  ! number of time slots for 4D-LETKF
+INTEGER,SAVE :: nbslot=5 !1               !STEVE: nbslot=1 for testing for GMAO example case. Normal case is nbslot=5 ! basetime slot
+REAL(r_size),SAVE :: sigma_obs=720.0d3    !3x Rossby Radius of Deformation at Equ. according to Chelton
+REAL(r_size),SAVE :: sigma_obs0=200.0d3   !20x Rossby Radius of Deformation at Pole, according to Chelton
+REAL(r_size),SAVE :: sigma_obsv=1000.0d0  !STEVE: doesn't matter if using option "DO_NO_VERT_LOC"
+REAL(r_size),SAVE :: sigma_obst=5.0d0     ! Not using this at the moment
+REAL(r_size),SAVE :: gross_error=3.0d0    ! number of standard deviations
+! REAL(r_size),PARAMETER :: gross_error=10.0d0 !3.0d0 ! number of standard deviations   (Use for OSSEs)
+                                                      ! used to filter out observations
 INTEGER,PARAMETER :: nid_obs=7
 INTEGER,PARAMETER :: id_u_obs=2819
 INTEGER,PARAMETER :: id_v_obs=2820
@@ -32,8 +42,8 @@ INTEGER,PARAMETER :: id_atm_q_obs=5281      !(OCEAN) (ATMOS)
 INTEGER,PARAMETER :: id_atm_ps_obs=5280     !(OCEAN) (ATMOS)
 
 !ISSUE: make these namelist controllable:
-INTEGER :: obs1nrec = 6                     ! The number of records in the obs1-formatted file (previous 6, 7 adds a time record).
-INTEGER :: obs2nrec = 9                     ! The number of records in the obs2-formatted file (previous 8, 9 adds a time record).
+INTEGER, PARAMETER :: obs1nrec = 6                     ! The number of records in the obs1-formatted file (previous 6, 7 adds a time record).
+INTEGER, PARAMETER :: obs2nrec = 9                     ! The number of records in the obs2-formatted file (previous 8, 9 adds a time record).
 
 LOGICAL, PARAMETER :: DO_POTTEMP_to_INSITU = .false. ! Conversion to observation space. This is needed if the
                                                      ! observations aren't converted to potential temperature

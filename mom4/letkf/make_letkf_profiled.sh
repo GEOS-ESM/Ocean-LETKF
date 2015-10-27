@@ -11,7 +11,7 @@ source ../../config/$MACHINE.netcdf.sh
 
 # Ensemble size
 # STEVE: figure out how to read from params_letkf.f90 and put here (e.g. with awk/perl/etc.)
-MEM=056
+MEM=004
 # Experiment name
 name=PROFILE
 # Executable for letkf

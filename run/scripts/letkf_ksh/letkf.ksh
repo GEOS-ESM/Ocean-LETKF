@@ -35,11 +35,12 @@
 #                National Oceanograpic and Atmospheric Administration (NOAA)
 # Email       :: Steve.Penny@noaa.gov
 #===============================================================================
-
 set -e
 set -x
 set -v
-
+#NCO operator
+ENSAVE=/gpfs1/home/Libs/GNU/NCO/nco-4.4.2/bin/ncea
+ATIME2=`printf %.2d ${ATIME}`
 echo "LETKF run step"
 echo "Processing cycle: ${YYYYMMDDHH}"
 workdir=${EXP_DATA}/${YYYYMMDDHH}/letkf
@@ -60,14 +61,8 @@ IS=00
 
 # Update the date for the next analysis cycle
 date=/bin/date
-inc=5
+inc=$days	#determines the analysis cycle
 inc_units=days
-TY=`$date -d "$IY-$IM-$ID $inc $inc_units" +%Y`
-TM=`$date -d "$IY-$IM-$ID $inc $inc_units" +%m`
-TD=`$date -d "$IY-$IM-$ID $inc $inc_units" +%d`
-TH=`$date -d "$IY-$IM-$ID $inc $inc_units" +%H`
-TN=$IN
-TS=$IS
 
 # Update the analysis time and date
 ainc=$inc #`expr $inc - 1`
@@ -129,7 +124,8 @@ fi
 # START RUN LETKF ################################################
 cp $LDIR/$LETKFexe .
 echo "Running LETKF..."
-aprun -n $PBS_NP $LETKFexe
+#mpirun -np $PBS_NP $LETKFexe
+mpirun $LETKFexe
 echo "This is the LETKF run for cycle ${YYYYMMDDHH}" > ${workdir}/letkf.out
 # END   RUN LETKF ################################################
 
@@ -140,7 +136,8 @@ then
   if [ "$USE_INFLADJ" -eq "1" -a ! -f infl_redux.grd ]; then  #STEVE: if inflation relaxation is needed, it is applied here
     echo "Using inflation adjust..."
     cp $LDIR/$INFLadj .
-    aprun -n 1 $INFLadj
+#    mpirun -np 1 $INFLadj
+     mpirun  $INFLadj
   else
     echo "Not using inflation adjust..."
   fi
@@ -157,7 +154,8 @@ then
   if [ "$USE_ADAPOBS" -eq "1" ]; then
     echo "Using adaptive observations..."
     cp $LDIR/$ADAPTexe .
-    aprun -n $PBS_NP $ADAPTexe
+#    mpirun -np $PBS_NP $ADAPTexe
+     mpirun $ADAPTexe
   else
     echo "Using prescribed observation error. (Not adaptive observation error)"
   fi
@@ -166,6 +164,44 @@ fi
 #STEVE: avoid issue with too many hard links being created:
 rm -f $workdir/aEtaCds9399.nc
 rm -f $workdir/grid_spec.nc
+#*************************************************************************************
+#SIVA: Archive outputs from model (history, and gues) and LETKF (anal) and remove folder corresponding to previous cycle
+#
+#Compute the Ensemble mean and put it in the $ARCHDIR
+$ENSAVE -O ../model/*/history/${IY}${IM}${ID}.ocean_TS.nc $ARCHDIR/history/${IY}${IM}${ID}.ocean_TS.nc
+$ENSAVE -O ../model/*/history/${IY}${IM}${ID}.ocean_UV.nc $ARCHDIR/history/${IY}${IM}${ID}.ocean_UV.nc
+#
+
+#copy mean and spread files of analysis and guess to corresponding folders in $ARCHDIR
+cp anal_me.grd $ARCHDIR/ANAL/MEAN/${AY}${AM}${AD}${AH}.anal_me.grd
+cp anal_sp.grd $ARCHDIR/ANAL/SPRD/${AY}${AM}${AD}${AH}.anal_sp.grd
+cp gues_me.grd $ARCHDIR/GUES/MEAN/${AY}${AM}${AD}${AH}.gues_me.grd
+cp gues_sp.grd $ARCHDIR/GUES/SPRD/${AY}${AM}${AD}${AH}.gues_sp.grd
+
+#SIVA: The following may be deleted after verification of above analysis products
+$ENSAVE -O anal*.ocean_temp_salt.res.nc $ARCHDIR/ANAL/MEAN/${AY}${AM}${AD}${AH}.ocean_temp_salt.res.nc
+$ENSAVE -O anal*.ocean_velocity.res.nc $ARCHDIR/ANAL/MEAN/${AY}${AM}${AD}${AH}.ocean_velocity.res.nc
+$ENSAVE -O anal*.ocean_sbc.res.nc $ARCHDIR/ANAL/MEAN/${AY}${AM}${AD}${AH}.ocean_sbc.res.nc
+$ENSAVE -O anal*.ocean_barotropic.res.nc $ARCHDIR/ANAL/MEAN/${AY}${AM}${AD}${AH}.ocean_barotropic.res.nc
+
+$ENSAVE -O gs${ATIME2}*.ocean_temp_salt.res.nc $ARCHDIR/GUES/MEAN/${AY}${AM}${AD}${AH}.ocean_temp_salt.res.nc
+$ENSAVE -O gs${ATIME2}*.ocean_velocity.res.nc $ARCHDIR/GUES/MEAN/${AY}${AM}${AD}${AH}.ocean_velocity.res.nc
+$ENSAVE -O gs${ATIME2}*.ocean_sbc.res.nc $ARCHDIR/GUES/MEAN/${AY}${AM}${AD}${AH}.ocean_sbc.res.nc
+$ENSAVE -O gs${ATIME2}*.ocean_barotropic.res.nc $ARCHDIR/GUES/MEAN/${AY}${AM}${AD}${AH}.ocean_barotropic.res.nc
+
+#
+
+#SIVA: Since the present analysis is ready, folder of the last analysis cycle can be cleaned. 
+#This is required as the size of each cycle is extreamly large.
+if [ "$PM" -eq "01" -a "$PD" -eq "01" -a "$PH" -eq "00" ]; then
+ mv ../../${PY}${PM}${PD}${PH} $ARCHDIR/RESTART_SAVE/.	#STORE 01-JAN FOLDER OF EACH YEAR SO THAT IT CAN BE USED IN FUTURE.
+else
+ rm -rf ../../${PY}${PM}${PD}${PH}
+fi
+echo "Successful completion of Archive and cleaning" > ${workdir}/letkf_archNclean.out
+#SIVA: END of the Archiving and Cleaning Block*******************************
+#****************************************************************************
+#****************************************************************************
 
 exit 0
 

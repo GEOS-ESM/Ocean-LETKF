@@ -28,9 +28,8 @@
 #===============================================================================
 # $ Author: Steve Penny $
 #===============================================================================
-
 set -e
-wgrib=/sw/xe6/wgrib/1.8.1.0b/sles11.1_gnu4.3.4/bin/wgrib
+#wgrib=/sw/xe6/wgrib/1.8.1.0b/sles11.1_gnu4.3.4/bin/wgrib
 
 #module load hdf5/1.8.11
 #module load netcdf/4.3.3.1
@@ -125,7 +124,7 @@ else
   done
 
   #STEVE: Just for safety, remove ocean_temp_salt.res.nc, ocean_velocity.res.nc and ocean_sbc.res.nc
-  #       so they don't accidentally get used as the restart fiels
+  #       so they don't accidentally get used as the restart fields
   rm -f ${workdir2}/INPUT/ocean_temp_salt.res.nc
   rm -f ${workdir2}/INPUT/ocean_velocity.res.nc
   rm -f ${workdir2}/INPUT/ocean_sbc.res.nc
@@ -209,11 +208,11 @@ fi
 
 cd ${workdir}
 # /usr/bin/perl -i.bak -pe "s/L_YR=\d+/L_YR=$IY/" ./mDS.sh
-cp $SBCDIR/$mkDlySBCnc4 .
-cp $SBCDIR/mkDlySss4nci .
-cp $SBCDIR/mkDlySst4i .
+#cp $SBCDIR/$mkDlySBCnc4 .
+#cp $SBCDIR/mkDlySss4nci .
+#cp $SBCDIR/mkDlySst4i .
 ln -f $INPUT_INIT/grid_spec.nc .    # Model grid definitions
-ln -f $INPUT_INIT/../salt12.nc .    # Salinity climatology file
+#ln -f $INPUT_INIT/../salt12.nc .    # Salinity climatology file
 
 #if [ "$isfirst" -eq "1" ]; then
 #  # change first day so it doesn't need data from 1984:
@@ -225,12 +224,49 @@ echo "In: $PWD"
 echo "Running:"
 #cp $wgrib ${workdir}
 if [ $USE_EFLX -eq 1 ]; then
-  echo "${SBCDIR}/$mDS ${workdir2} $FLXDIR $FLXDIR2 $SSTDIR $days"
-  ${SBCDIR}/$mDS ${workdir2} $FLXDIR $FLXDIR2/$MEM2 $SSTDIR $days
+#  echo "${SBCDIR}/$mDS ${workdir2} $FLXDIR $FLXDIR2 $SSTDIR $days"
+#  ${SBCDIR}/$mDS ${workdir2} $FLXDIR $FLXDIR2/$MEM2 $SSTDIR $days
+ln -f ${FLXDIR}/RA2_${IY}_TFLUX.nc RA2_daily_TFLUX.nc
+ln -f ${FLXDIR}/RA2_${IY}_LONGWV.nc RA2_daily_LONGWV.nc
+ln -f ${FLXDIR}/RA2_${IY}_QFLUX.nc RA2_daily_QFLUX.nc
+ln -f ${FLXDIR}/RA2_${IY}_U10.nc RA2_daily_U10.nc
+ln -f ${FLXDIR}/RA2_${IY}_V10.nc RA2_daily_V10.nc
+ln -f ${FLXDIR}/RA2_${IY}_dsw.nc RA2_daily_dsw.nc
+ln -f ${FLXDIR}/RA2_${IY}_dlw.nc RA2_daily_dlw.nc
+ln -f ${FLXDIR}/RA2_${IY}_t2m.nc RA2_daily_t2m.nc
+ln -f ${FLXDIR}/RA2_${IY}_q2m.nc RA2_daily_q2m.nc
+ln -f ${FLXDIR}/RA2_${IY}_pres.nc RA2_daily_pres.nc
+
+ln -f ${FLXDIR2}/$MEMBERID/R2CR_${IY}_PRATE.nc RA2_daily_PRATE.nc
+ln -f ${FLXDIR2}/$MEMBERID/R2CR_${IY}_SHRTWV.nc RA2_daily_SHRTWV.nc
+ln -f ${FLXDIR2}/$MEMBERID/R2CR_${IY}_TAUX.nc RA2_daily_TAUX.nc
+ln -f ${FLXDIR2}/$MEMBERID/R2CR_${IY}_TAUY.nc RA2_daily_TAUY.nc
+
+ln -f ${INPUT_INIT}/temp_sfc_restore.nc temp_sfc_restore.nc 
+ln -f ${INPUT_INIT}/salt_sfc_restore.nc salt_sfc_restore.nc 
+
   #STEVE: need to format each ensemble member exactly as R2 (to make my life easier)
 elif [ $USE_MFLX -eq 1 ]; then
-  echo "${SBCDIR}/$mDS ${workdir2} $FLXDIR $days"
-  ${SBCDIR}/$mDS ${workdir2} $FLXDIR $SSTDIR $days
+#  echo "${SBCDIR}/$mDS ${workdir2} $FLXDIR $days"
+#  ${SBCDIR}/$mDS ${workdir2} $FLXDIR $SSTDIR $days
+ln -f ${FLXDIR}/RA2_${IY}_TFLUX.nc RA2_daily_TFLUX.nc
+ln -f ${FLXDIR}/RA2_${IY}_LONGWV.nc RA2_daily_LONGWV.nc
+ln -f ${FLXDIR}/RA2_${IY}_QFLUX.nc RA2_daily_QFLUX.nc
+ln -f ${FLXDIR}/RA2_${IY}_U10.nc RA2_daily_U10.nc
+ln -f ${FLXDIR}/RA2_${IY}_V10.nc RA2_daily_V10.nc
+ln -f ${FLXDIR}/RA2_${IY}_dsw.nc RA2_daily_dsw.nc
+ln -f ${FLXDIR}/RA2_${IY}_dlw.nc RA2_daily_dlw.nc
+ln -f ${FLXDIR}/RA2_${IY}_t2m.nc RA2_daily_t2m.nc
+ln -f ${FLXDIR}/RA2_${IY}_q2m.nc RA2_daily_q2m.nc
+ln -f ${FLXDIR}/RA2_${IY}_pres.nc RA2_daily_pres.nc
+ln -f ${FLXDIR}/RA2_${IY}_PRATE.nc RA2_daily_PRATE.nc
+ln -f ${FLXDIR}/RA2_${IY}_SHRTWV.nc RA2_daily_SHRTWV.nc
+ln -f ${FLXDIR}/RA2_${IY}_TAUX.nc RA2_daily_TAUX.nc
+ln -f ${FLXDIR}/RA2_${IY}_TAUY.nc RA2_daily_TAUY.nc
+
+ln -f ${SSTDIR}/temp_sfc_restore.nc temp_sfc_restore.nc
+ln -f ${SSSDIR}/salt_sfc_restore.nc salt_sfc_restore.nc 
+
 fi
 
 # link to each model working directory
@@ -244,4 +280,6 @@ for file in `ls -d ${workdir}/RA2_daily_*.nc`; do
   ln -f $file ${workdir2}/INPUT
 done
 
+echo ".........................."
+echo "..........................NORMAL END"
 exit 0

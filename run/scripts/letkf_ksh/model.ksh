@@ -30,7 +30,6 @@
 #                National Oceanograpic and Atmospheric Administration (NOAA)
 # Email       :: Steve.Penny@noaa.gov
 #===============================================================================
-
 set -e
 
 echo "Model step"
@@ -76,10 +75,10 @@ echo "Running model ensemble members..."
 #STEVE: Submit model run
 cp $MOM4run ${workdir} #STEVE: mostly for running in debugging purposes
 # (Calls aprun within this script)
-$MOM4run ${TMPDIR}/model ${MEMBERID} mom4p1_$mtype $PBS_NP
+$MOM4run ${TMPDIR}/model ${MEMBERID} mom4p1_$mtype $MODEL_CORES
 
 # Output a file containing
-echo "$MOM4run ${TMPDIR}/model ${MEMBERID} mom4p1_$mtype $PBS_NP" > model_run_command.txt
+echo "$MOM4run ${TMPDIR}/model ${MEMBERID} mom4p1_$mtype $MODEL_CORES " > model_run_command.txt
 echo "model run for ${MEMBERID} is finished." > ${workdir}/model.out
 
 exit 0

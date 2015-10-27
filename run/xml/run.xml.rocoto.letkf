@@ -19,14 +19,27 @@
 
       
     <!-- Root is the run directory -->
-    <!ENTITY root "/autofs/mnt/ncrc-svm1_home1/Steve.Penny/letkf/Ocean-LETKF">
-    <!ENTITY storage "/ncrc/home1/Steve.Penny/lf1u/tmp_letkf_mom4_perftools">
+    <!ENTITY root "/incois/siva/mom4p1_letkf/Ocean-LETKF">
+    <!ENTITY storage "/incois/siva/mom4p1_letkf/mom4p1/work/IG_grid">
     <!ENTITY EXP_HOME "&root;/run">
-    <!ENTITY SBCDIR "&root;/mom4/support">
+    <!ENTITY SBCDIR "/incois/mom/Arya/R2">
     <!ENTITY EXP_DATA "&storage;">
     <!ENTITY LOG "&storage;/log">
     <!ENTITY SCRIPTS "&EXP_HOME;/scripts/letkf_ksh">
-    <!ENTITY INPUT_INIT "&EXP_DATA;/INIT/INPUT">
+    <!ENTITY INPUT_INIT "&EXP_DATA;/INPUT">
+<!--
+SIVA: 
+ARCHDIR is the folder where outputs from the experiments, such as Yearly restart, analysis mean and spread, gues mean and spread, and
+output from the mom4, is archived in an organized manner
+ARCHDIR should have the following structure
+RESTART_SAVE : the folder which can be used later as a restart folder for the system
+ANAL/MEAN : ensemble mean of analysis
+ANAL/SPRD :ensemble spread of analysis 
+GUES/MEAN : ensemble mean of guess field
+GUES/SPRD : ensemble spread of the guess field
+history  : for model outputs
+-->
+    <!ENTITY ARCHDIR "&storage;/ARCHIVE">
 
     <!ENTITY MEMBERS_10 "01 02 03 04 05 06 07 08 09 10">    
     <!ENTITY MEMBERS_20 "&MEMBERS_10; 11 12 13 14 15 16 17 18 19 20">
@@ -35,53 +48,58 @@
     <!ENTITY MEMBERS_40 "&MEMBERS_36; 37 38 39 40">
     <!ENTITY MEMBERS_56 "&MEMBERS_40; 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56">
 
-    <!ENTITY maxtries "3">
+    <!ENTITY maxtries "5">
 
 <!--
     <!ENTITY MEMBERS "&MEMBERS_56;">
     <!ENTITY MEM2 "56">
 -->
+    <!ENTITY MEMBERS "&MEMBERS_10; 11 12 13 14 15 16">
+    <!ENTITY MEM2 "16">
+
+<!--
     <!ENTITY MEMBERS "01 02 03 04">
     <!ENTITY MEM2 "04">
+-->
     <!ENTITY MEM3 "0&MEM2;">
 
-    <!ENTITY days "5">
-    <!ENTITY ATIME "05">
+    <!ENTITY days "1">
+    <!ENTITY ATIME "01">
     <!ENTITY NSLOTS "&days;">
 <!--
     <!ENTITY PROJECT "cmp">
 -->
-    <!ENTITY PROJECT "cpo_orr">
-    <!ENTITY GAEA "-l partition=c1:c2">
+    <!ENTITY PROJECT "mom4p1_letkf">
+    <!ENTITY GAEA "">
     <!ENTITY ZEUS "">
     <!ENTITY CUSTOM "&GAEA;">
     <!ENTITY CUSTOM_PREP "">
-    <!ENTITY QUEUE "batch">
-    <!ENTITY QUEUE_PREP "ldtn">
+    <!ENTITY QUEUE "incois">
+    <!ENTITY QUEUE_PREP "incois">
 
 
     <!ENTITY MODEL_PREP_QUEUE "&QUEUE_PREP;">
     <!ENTITY MODEL_PREP_CORES "1">
-    <!ENTITY MODEL_PREP_WALLTIME "00:00:50"> 
+    <!ENTITY MODEL_PREP_WALLTIME "00:10:00"> 
     <!ENTITY MODEL_QUEUE "&QUEUE;">
-    <!ENTITY MODEL_CORES "256">
+    <!ENTITY MODEL_CORES "64">
     <!ENTITY MODEL_WALLTIME "0:20:00">
 <!--
     STEVE: at 512 cores, the runtime is only about 1.5-2.5 minutes when assimilating T/S profiles with 28 members
 -->
     <!ENTITY LETKF_PREP_QUEUE "&QUEUE_PREP;">
     <!ENTITY LETKF_PREP_CORES "1">
-    <!ENTITY LETKF_PREP_WALLTIME "00:00:50">
+    <!ENTITY LETKF_PREP_WALLTIME "00:10:00">
     <!ENTITY LETKF_QUEUE "&QUEUE;">
-    <!ENTITY LETKF_CORES "480">
+    <!ENTITY LETKF_CORES "80">
     <!ENTITY LETKF_WALLTIME "00:20:00">
 
     <!-- Experiment Parameters -->
 <!--
     <!ENTITY name "NCEP_ENS">
 -->
-    <!ENTITY ltype "PROFILE.&MEM3;+pat">
-    <!ENTITY mtype "solo_prod">
+    <!ENTITY ltype "TEST.&MEM3;">
+    <!ENTITY mtype "solo">
     <!ENTITY rtype "ocean_solo">
     <!ENTITY datype "LETKF">
 
@@ -90,45 +108,59 @@
     <!-- letkf source directory -->
     <!ENTITY lroot  "&root;/mom4">
     <!ENTITY LDIR   "&lroot;/letkf">
+    <!ENTITY LDIRO   "&lroot;/obs">
     <!-- temp space directory -->
-    <!ENTITY troot  "/lustre/f1/unswept/Steve.Penny">
+    <!ENTITY troot  "/incois/siva/mom4p1_letkf">
     <!-- model source directory -->
     <!ENTITY mroot  "&troot;/mom4p1">
 
     <!-- Observation directories -->
-    <!ENTITY OBSDIR1 "&troot;/OBS/synthetic/letkf_fmt/PROFS_gerr_TS">
-    <!ENTITY OBSDIR5 "&troot;/OBS/synthetic/letkf_fmt/PROFS_gerr_TS">
-    <!ENTITY USE_ALTIMETRY "0">
-    <!ENTITY ACLIM "aEtaCds9399.nc">
+    <!ENTITY OBSDIR1_SST "/incois/siva/OBS/SUPEROBS/LETKF">
+    <!ENTITY OBSDIR1_SSS "/incois/siva/OBS/AQUARIUS_L2/LETKF">
+    <!ENTITY OBSDIR1_ETA "/incois/siva/OBS/ALTIMETER/LETKF">
+    <!ENTITY OBSDIR1_TEMP "/incois/siva/OBS/IG_TSPRFS/LETKF">
+    <!ENTITY OBSDIR1_SALT "/incois/siva/OBS/IG_TSPRFS/LETKF">
+    <!ENTITY OBSDIR5_SST "/incois/siva/OBS/SUPEROBS/LETKF">
+    <!ENTITY OBSDIR5_SSS "/incois/siva/OBS/AQUARIUS_L2/LETKF">
+    <!ENTITY OBSDIR5_ETA "/incois/siva/OBS/ALTIMETER/LETKF">
+    <!ENTITY OBSDIR5_TEMP "/incois/siva/OBS/IG_TSPRFS/LETKF">
+    <!ENTITY OBSDIR5_SALT "/incois/siva/OBS/IG_TSPRFS/LETKF">
+    <!ENTITY USE_ALTIMETRY "1">
+    <!ENTITY ACLIM "/incois/siva/OBS/ALTIMETER/aEtaCds9399.nc">
 
 <!--
     STEVE: All letkf exe's below are stored in &LDIR;
 -->
     <!ENTITY LETKFexe "letkf.&ltype;">
-    <!ENTITY OBSOPexe "obsope.&MEM3;">
+    <!ENTITY OBSOPexe_sst "obsop_sst.&MEM3;">
+    <!ENTITY OBSOPexe_sss "obsop_sss.&MEM3;">
+    <!ENTITY OBSOPexe_eta "obsop_eta.&MEM3;">
+    <!ENTITY OBSOPexe_temp "obsop_temp.&MEM3;">
+    <!ENTITY OBSOPexe_salt "obsop_salt.&MEM3;">
+    <!ENTITY OBSOPexe_combine "obs2combine">
     <!ENTITY ADAPTexe "aoerl.&ltype;">
     <!ENTITY INFLadj "infladj.x">
 
     <!-- Surface flux directories -->
-    <!ENTITY FLXDIR "/lustre/f1/unswept/ncep/David.Behringer/SBC/R2/DAILYnc">
-    <!ENTITY FLXDIR2 "&troot;/SFLUX/R2CR">
-    <!ENTITY SSTDIR  "/lustre/f1/unswept/ncep/David.Behringer/SBC/SST2/DAILY">
+    <!ENTITY FLXDIR "/incois/mom/Arya/R2">
+    <!ENTITY FLXDIR2 "/incois/siva/DATA/NCEPR2/R2CR">
+    <!ENTITY SSTDIR  "&INPUT_INIT;">
+    <!ENTITY SSSDIR  "&INPUT_INIT;">
 
     <!-- Model run script/executable -->
-    <!ENTITY MOM4run "&SCRIPTS;/mom4run_GAEA.csh">
+    <!ENTITY MOM4run "&SCRIPTS;/mom4run_Aditya.csh">
     <!ENTITY MOM4exe "fms_mom4p1_&mtype;.x">
     <!ENTITY MOM4dir "&mroot;/exec_ftn/mom4p1_&mtype;">
 ]>
 
-<workflow realtime="F" scheduler="moab" cyclethrottle="5">
+<workflow realtime="F" scheduler="lsf" cyclethrottle="1">
 
   <log verbosity="2"><cyclestr>&LOG;/workflow/@Y@m@d@H.log</cyclestr></log>
-
 <!-- START TIME: 
   <cycledef>199101010000 200012310000 &days;:00:00:00</cycledef>
 -->
   <!-- Set the start time as &days; after the previous available time -->
-  <cycledef>199210020000 199901010000 &days;:00:00:00</cycledef>
+  <cycledef>201110050000 201112310000 &days;:00:00:00</cycledef>
 
   <metatask>
 
@@ -184,6 +216,11 @@
       </envar>
 
       <envar>
+        <name>SSSDIR</name>
+        <value>&SSSDIR;</value>
+      </envar>
+
+      <envar>
         <name>INPUT_INIT</name>
         <value>&INPUT_INIT;</value>
       </envar>
@@ -217,10 +254,11 @@
         <or>
           <datadep age="0"><cyclestr offset="-&days;:00:00:00">&EXP_DATA;/@Y@m@d@H/go</cyclestr></datadep>
           <and>
-            <datadep age="60"><cyclestr offset="-&days;:00:00:00">&EXP_DATA;/@Y@m@d@H/letkf/NOUT-001</cyclestr></datadep>
+            <datadep age="60"><cyclestr offset="-&days;:00:00:00">&EXP_DATA;/@Y@m@d@H/letkf/NOUT-0001</cyclestr></datadep>
             <datadep age="60"><cyclestr offset="-&days;:00:00:00">&EXP_DATA;/@Y@m@d@H/letkf/anal_me.grd</cyclestr></datadep>
             <datadep age="60"><cyclestr offset="-&days;:00:00:00">&EXP_DATA;/@Y@m@d@H/letkf/anal_sp.grd</cyclestr></datadep>
             <datadep age="60"><cyclestr offset="-&days;:00:00:00">&EXP_DATA;/@Y@m@d@H/letkf/letkf.out</cyclestr></datadep>
+            <datadep age="60"><cyclestr offset="-&days;:00:00:00">&EXP_DATA;/@Y@m@d@H/letkf/letkf_archNclean.out</cyclestr></datadep>
           </and>
         </or>
       </dependency>
@@ -251,6 +289,11 @@
       <envar>
         <name>EXP_DATA</name>
         <value>&EXP_DATA;</value>
+      </envar>
+
+      <envar>
+        <name>MODEL_CORES</name>
+        <value>&MODEL_CORES;</value>
       </envar>
 
       <envar>
@@ -342,7 +385,7 @@
 
       <envar>
         <name>LDIR</name>
-        <value>&LDIR;</value>
+        <value>&LDIRO;</value>
       </envar>
 
       <envar>
@@ -351,18 +394,70 @@
       </envar>
 
       <envar>
-        <name>OBSOPexe</name>
-        <value>&OBSOPexe;</value>
+        <name>OBSOPexe_sst</name>
+        <value>&OBSOPexe_sst;</value>
+      </envar>
+      <envar>
+        <name>OBSOPexe_sss</name>
+        <value>&OBSOPexe_sss;</value>
+      </envar>
+      <envar>
+        <name>OBSOPexe_eta</name>
+        <value>&OBSOPexe_eta;</value>
+      </envar>
+      <envar>
+        <name>OBSOPexe_temp</name>
+        <value>&OBSOPexe_temp;</value>
+      </envar>
+      <envar>
+        <name>OBSOPexe_salt</name>
+        <value>&OBSOPexe_salt;</value>
+      </envar>
+      <envar>
+        <name>OBSOPexe_combine</name>
+        <value>&OBSOPexe_combine;</value>
       </envar>
 
       <envar>
-        <name>OBSDIR1</name>
-        <value>&OBSDIR1;</value>
+        <name>OBSDIR1_SST</name>
+        <value>&OBSDIR1_SST;</value>
+      </envar>
+      <envar>
+        <name>OBSDIR1_SSS</name>
+        <value>&OBSDIR1_SSS;</value>
+      </envar>
+      <envar>
+        <name>OBSDIR1_ETA</name>
+        <value>&OBSDIR1_ETA;</value>
+      </envar>
+      <envar>
+        <name>OBSDIR1_TEMP</name>
+        <value>&OBSDIR1_TEMP;</value>
+      </envar>
+      <envar>
+        <name>OBSDIR1_SALT</name>
+        <value>&OBSDIR1_SALT;</value>
       </envar>
 
       <envar>
-        <name>OBSDIR5</name>
-        <value>&OBSDIR5;</value>
+        <name>OBSDIR5_SST</name>
+        <value>&OBSDIR5_SST;</value>
+      </envar>
+      <envar>
+        <name>OBSDIR5_SSS</name>
+        <value>&OBSDIR5_SSS;</value>
+      </envar>
+      <envar>
+        <name>OBSDIR5_ETA</name>
+        <value>&OBSDIR5_ETA;</value>
+      </envar>
+      <envar>
+        <name>OBSDIR5_TEMP</name>
+        <value>&OBSDIR5_TEMP;</value>
+      </envar>
+      <envar>
+        <name>OBSDIR5_SALT</name>
+        <value>&OBSDIR5_SALT;</value>
       </envar>
 
       <envar>
@@ -396,6 +491,7 @@
       </dependency>
 
      </task>
+
   </metatask>
 
   <task name="letkf" maxtries="&maxtries;">
@@ -409,7 +505,6 @@
       <walltime>&LETKF_WALLTIME;</walltime>
 
       <join><cyclestr>&LOG;/letkf/@Y@m@d@H.log</cyclestr></join>
-
       <envar>
         <name>days</name>
         <value>&days;</value>
@@ -459,11 +554,21 @@
         <name>altimetry_climatology_file</name>
         <value>&ACLIM;</value>
       </envar>
+ 
+     <envar>
+        <name>ATIME</name>
+        <value>&ATIME;</value>
+      </envar>
+
+      <envar>
+       <name>ARCHDIR</name>
+       <value>&ARCHDIR;</value>
+      </envar>
 
       <dependency>
        <and>
-        <datadep age="01"><cyclestr>&EXP_DATA;/@Y@m@d@H/letkf/obs01001.dat</cyclestr></datadep>
-        <datadep age="01"><cyclestr>&EXP_DATA;/@Y@m@d@H/letkf/gs01001.ocean_temp_salt.res.nc</cyclestr></datadep>
+        <datadep age="60"><cyclestr>&EXP_DATA;/@Y@m@d@H/letkf/obs01001.dat</cyclestr></datadep>
+        <datadep age="60"><cyclestr>&EXP_DATA;/@Y@m@d@H/letkf/gs01001.ocean_temp_salt.res.nc</cyclestr></datadep>
         <taskdep task="lprep_01"/>
         <taskdep task="lprep_02"/>
         <taskdep task="lprep_03"/>
@@ -480,49 +585,7 @@
         <taskdep task="lprep_14"/>
         <taskdep task="lprep_15"/>
         <taskdep task="lprep_16"/>
-        <taskdep task="lprep_17"/>
-        <taskdep task="lprep_18"/>
-        <taskdep task="lprep_19"/>
-        <taskdep task="lprep_20"/>
-        <taskdep task="lprep_21"/>
-        <taskdep task="lprep_22"/>
-        <taskdep task="lprep_23"/>
-        <taskdep task="lprep_24"/>
-        <taskdep task="lprep_25"/>
-        <taskdep task="lprep_26"/>
-        <taskdep task="lprep_27"/>
-        <taskdep task="lprep_28"/>
-        <taskdep task="lprep_29"/>
-        <taskdep task="lprep_30"/>
-        <taskdep task="lprep_31"/>
-        <taskdep task="lprep_32"/>
-        <taskdep task="lprep_33"/>
-        <taskdep task="lprep_34"/>
-        <taskdep task="lprep_35"/>
-        <taskdep task="lprep_36"/>
-        <taskdep task="lprep_37"/>
-        <taskdep task="lprep_38"/>
-        <taskdep task="lprep_39"/>
-        <taskdep task="lprep_40"/>
-        <taskdep task="lprep_41"/>
-        <taskdep task="lprep_42"/>
-        <taskdep task="lprep_43"/>
-        <taskdep task="lprep_44"/>
-        <taskdep task="lprep_45"/>
-        <taskdep task="lprep_46"/>
-        <taskdep task="lprep_47"/>
-        <taskdep task="lprep_48"/>
-        <taskdep task="lprep_49"/>
-        <taskdep task="lprep_50"/>
-        <taskdep task="lprep_51"/>
-        <taskdep task="lprep_52"/>
-        <taskdep task="lprep_53"/>
-        <taskdep task="lprep_54"/>
-        <taskdep task="lprep_55"/>
-        <taskdep task="lprep_56"/>
        </and>
       </dependency>
-    
   </task>
-
 </workflow>

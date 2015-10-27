@@ -74,10 +74,10 @@ PROGRAM obsop
 ! REAL(r_size),ALLOCATABLE,SAVE :: obstime(:)
   !STEVE:
   REAL(r_size),DIMENSION(nid_obs),PARAMETER :: & !STEVE: use this to scale the input observations
-              obserr_scaling=1.0d0 !(/ 1.00d0, 1.00d0, 1.00d0, 1.00d0, 1.0d0, 1.0d0, 1.0d0 /)
+              obserr_scaling=(/ 1.00d0, 1.00d0, 1.00d0, 1.00d0, 1.0d0, 1.0d0, 1.0d0 /)
                               ! U       V       Temp    Salt    SSH    SST    SSS 
   REAL(r_size),DIMENSION(nid_obs),PARAMETER :: & !STEVE: use this to select random input observations
-              obs_randselect=1.0d0 !(/ 1.00d0, 1.00d0, 1.00d0, 1.00d0, 1.00d0, 1.00d0, 1.00d0 /)
+              obs_randselect=(/ 1.00d0, 1.00d0, 1.00d0, 1.00d0, 1.00d0, 1.00d0, 1.00d0 /)
                               ! U       V       Temp    Salt    SSH     SST     SSS 
   REAL(r_size), DIMENSION(1) :: rand
 
@@ -110,9 +110,6 @@ PROGRAM obsop
 
   ! For potential temperature conversion to in situ:
   REAL(r_size) :: p,pt,sp
-
-  ! Remove obs in tripolar region (edit via command line)
-  LOGICAL :: DO_REMOVE_65N = .true. ! (default) Remove all observations poleward of 65ºN (due to tripolar grid)
 
   !-----------------------------------------------------------------------------
   ! Initialize the common_mom4 module, and process command line options
@@ -147,8 +144,8 @@ PROGRAM obsop
   !-----------------------------------------------------------------------------
   ALLOCATE( v3d(nlon,nlat,nlev,nv3d) )
   ALLOCATE( v2d(nlon,nlat,nv2d) )
-  CALL read_diag(guesfile,v3d,v2d)
-  WRITE(6,*) '****************'
+  CALL read_grd(guesfile,v3d,v2d)
+  print *, '****************'
 
   !!STEVE: for adaptive observation error:
   INQUIRE(FILE=aoerinfile, EXIST=oerfile_exists)
@@ -156,12 +153,11 @@ PROGRAM obsop
     ALLOCATE(o3d(nlon,nlat,nlev,nv3d),o2d(nlon,nlat,nv2d))
     CALL read_bingrd(trim(aoerinfile),o3d,o2d)
   endif
-  WRITE(6,*) '****************'
+  print *, '****************'
 
   !-----------------------------------------------------------------------------
   ! Cycle through all observations
   !-----------------------------------------------------------------------------
-  WRITE(6,*) "Cycling through observations..."
   ohx=0.0d0
   oqc=0
   DO n=1,nobs
@@ -188,7 +184,7 @@ PROGRAM obsop
     !handled in letkf.
     !STEVE: 3/17/2014: It was the ice model, and probably due to perturbations in the ice model.
     !                  For now, the ice model has been removed.
-    if (DO_REMOVE_65N .and. rlat(n) > 65) then
+    if (rlat(n) > 65) then
       if (verbose) WRITE(6,'(A)') "Latitude above 65.0N, in tripolar region. Removing observation..."
       cnt_triout = cnt_triout + 1
       CYCLE
@@ -493,14 +489,6 @@ do i=1,COMMAND_ARGUMENT_COUNT(),2
       CALL GET_COMMAND_ARGUMENT(i+1,arg2)
       PRINT *, "Argument ", i+1, " = ",TRIM(arg2)
       aoeroutfile = arg2
-    case('-alt')
-      CALL GET_COMMAND_ARGUMENT(i+1,arg2)
-      PRINT *, "Argument ", i+1, " = ",TRIM(arg2)
-      read (arg2,*) DO_ALTIMETRY
-    case('-rm65N')
-      CALL GET_COMMAND_ARGUMENT(i+1,arg2)
-      PRINT *, "Argument ", i+1, " = ",TRIM(arg2)
-      read (arg2,*) DO_REMOVE_65N
     case default
       PRINT *, "ERROR: option is not supported: ", arg1
       PRINT *, "(with value : ", trim(arg2), " )"

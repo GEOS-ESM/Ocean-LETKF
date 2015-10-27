@@ -1,1 +1,6 @@
-/ncrc/home1/oar.esrl.rocoto/1.1/bin/rocotorun -v 10 -w /autofs/mnt/ncrc-svm1_home1/Steve.Penny/letkf/Ocean-LETKF/run/xml/run.xml.rocoto.letkf -d /autofs/mnt/ncrc-svm1_home1/Steve.Penny/letkf/Ocean-LETKF/run/log/workflow/letkf.store
+rocotorun -w /incois/siva/mom4p1_letkf/Ocean-LETKF/run/xml/run.xml.rocoto.letkf -d /incois/siva/mom4p1_letkf/Ocean-LETKF/run/log/workflow/letkf.store
+
+#Use the following line for Crontab in Aditya
+#
+#* * * * *  . ~/.bash_profile; . /gpfs1/Platform/lsf912/conf/profile.lsf; . /gpfs1/Platform/ppm912/conf/profile.js; . /gpfs1/Platform/pac912/profile.platform; rocotorun -w /incois/siva/mom4p1_letkf/Ocean-LETKF/run/xml/run.xml.rocoto.letkf -d /incois/siva/mom4p1_letkf/Ocean-LETKF/run/log/workflow/letkf.store
+
