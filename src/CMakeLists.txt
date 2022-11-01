@@ -67,13 +67,16 @@ set (SRCS
   obs/gsw_fortran_v3_03/gsw_oceanographic_toolbox.f90
   )
 
+find_package(HDF5 REQUIRED COMPONENTS Fortran)
+
 add_library(OCN.letkf ${SRCS})
 if (${SOLO_BUILD})
     set (OCNLETKF_LD_LIBS NetCDF::NetCDF_Fortran MPI::MPI_Fortran HDF5::HDF5)
 else()
-    set (OCNLETKF_LD_LIBS NetCDF::NetCDF_Fortran MPI::MPI_Fortran HDF5::HDF5 Threads::Threads)
+    set (OCNLETKF_LD_LIBS NetCDF::NetCDF_Fortran MPI::MPI_Fortran hdf5hl_fortran hdf5_fortran hdf5_hl hdf5)
 endif()
 target_link_libraries(OCN.letkf PUBLIC ${OCNLETKF_LD_LIBS})
+target_include_directories(OCN.letkf PRIVATE ${INC_HDF5})
 set_target_properties (OCN.letkf PROPERTIES Fortran_PREPROCESS ON) # Need to preprocess .f90 files for ifdef on next line
 target_compile_definitions(OCN.letkf PRIVATE DYNAMIC)
 install(TARGETS OCN.letkf)
@@ -96,7 +99,10 @@ set(operators
   )
 foreach(operator ${operators})
   add_executable(OCN.obsOp_${MODEL}.${operator}.x obs/obsop_${operator}.f90)
-  target_link_libraries(OCN.obsOp_${MODEL}.${operator}.x PRIVATE OCN.letkf NetCDF::NetCDF_Fortran HDF5::HDF5)
+  target_link_libraries(OCN.obsOp_${MODEL}.${operator}.x PRIVATE OCN.letkf)
+  if (NOT SOLO_BUILD)
+     target_include_directories(OCN.obsOp_${MODEL}.${operator}.x PRIVATE ${INC_HDF5})
+  endif ()
   set_target_properties (OCN.obsOp_${MODEL}.${operator}.x  PROPERTIES Fortran_PREPROCESS ON) 
   target_compile_definitions(OCN.obsOp_${MODEL}.${operator}.x PRIVATE DYNAMIC)
   install(TARGETS OCN.obsOp_${MODEL}.${operator}.x)
